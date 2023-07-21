@@ -35,25 +35,10 @@ const io = require('socket.io')(server, {
 });
 
 io.on("connection", (socket) => {
-    socket.on("setup", (userData) => {
-        socket.join(userData?.user_id);
-        socket.emit("connected");
-    });
+    console.log("user joined server")
+    socket.on("send message", ({ sender, recipient, message }) => {
+        console.log("see this", sender, recipient, message);
 
-    socket.on("join chat", (room) => {
-        socket.join(room);
-        console.log("user joined room", room);
-    })
-
-
-    socket.on("new message", (newMessageRecieved) => {
-        let chat = newMessageRecieved?.chat;
-        if (!chat?.users) return console.log("chat.users is not defined");
-        chat.users.forEach(user => {
-            if (user.user_id === newMessageRecieved.sender.user_id) return;
-            socket.in(user.user_id).emit("message received", newMessageRecieved);
-        })
-
-        // here we can store that chat in database.
+        
     })
 })

@@ -4,25 +4,11 @@ const chats = require("../../chats");
 const getChats = async (req, res) => {
     const user_id = req.params.id;
     try {
-
-        let chatsToSend = [];
-        let userData;
-
-        chats.forEach(chat => {
-            let isValidChat = chat.users.find(user => user.user_id === user_id);
-            if (isValidChat) {
-                userData = isValidChat;
-                let user = chat.users.find(user => user.user_id !== user_id);
-                chatsToSend.push({
-                    ...chat,
-                    friend: user,
-                })
-            }
-        });
-
-        res.status(200).json({ success: true, data: { user: userData, data: chatsToSend } });
+        let users = chats.filter(ch => ch.user_id !== user_id);
+        let user = chats.find(u => u.user_id === user_id)
+        res.status(200).json({ success: true, data: users, user });
     } catch (error) {
-
+        res.status(500).json({ success: false, error: error.message, error });
     }
 }
 
