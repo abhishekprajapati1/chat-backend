@@ -1,0 +1,43 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+// =================================================================
+//                                Chats
+// =================================================================
+
+model Chat {
+  id                      Int @id @default(autoincrement())
+  user                    User @relation(fields: [user_id], references: [id])
+  user_id                 Int
+  chat_name               String       
+  messages                Message[]     
+}
+
+model Message {
+  id                      Int @id @default(autoincrement())
+  sender                  User @relation(fields: [sender_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  sender_id               Int
+  content                 String
+  chat                    Chat @relation(fields: [chat_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  chat_id                 Int
+}
+
+model User {
+  id                      Int @id @default(autoincrement())
+  email                   String  @unique
+  name                    String
+  chats                   Chat[]
+  avatar                  String @default("https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.png")
+  messages                Message[]
+}
