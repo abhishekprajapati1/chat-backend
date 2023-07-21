@@ -38,7 +38,6 @@ io.on("connection", (socket) => {
     console.log("user joined server")
     socket.on("send message", ({ sender, recipient, message }) => {
         console.log("see this", sender, recipient, message);
-
-        
+        socket.in(recipient.user_id).emit("message received", { sender, message })
     })
 })
