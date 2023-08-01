@@ -34,10 +34,21 @@ const io = require('socket.io')(server, {
     }
 });
 
+
+
+const activeConnections = {};
+
 io.on("connection", (socket) => {
-    console.log("user joined server")
-    socket.on("send message", ({ sender, recipient, message }) => {
-        console.log("see this", sender, recipient, message);
-        socket.in(recipient.user_id).emit("message received", { sender, message })
-    })
+    socket.on('join chat', (user_id) => {
+        console.log("joined the room", user_id);
+        activeConnections[user_id] = socket.id;
+    });
+
+
+    socket.on('send message', ({ sender, recipient, message }) => {
+        const toSocketId = activeConnections[recipient.user_id];
+        if (toSocketId) {
+            io.to(toSocketId).emit('message received', { sender, message });
+        }
+    });
 })
